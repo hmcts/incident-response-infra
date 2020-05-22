@@ -17,7 +17,7 @@ jobs:
             - task: CopyFiles@2
               inputs:
                 sourceFolder: '$(Pipeline.Workspace)/${{ parameters.environment }}${{ parameters.component }}${{ parameters.build }}plan'
-                targetFolder: '$(Pipeline.Workspace)/drop/components/${{ parameters.component }}'
+                targetFolder: '$(Pipeline.Workspace)/drop/${{ parameters.component }}'
             - task: TerraformInstaller@0
               inputs:
                 terraformVersion: ${{ parameters.terraformVersion }}
@@ -33,7 +33,7 @@ jobs:
                 backendAzureRmResourceGroupLocation: 'uksouth'
                 backendAzureRmContainerName: 'tfstate'
                 backendAzureRmKey: '${{ parameters.component }}.tfstate'
-                workingDirectory: '$(Pipeline.Workspace)/drop/components/${{ parameters.component }}'
+                workingDirectory: '$(Pipeline.Workspace)/drop'
               continueOnError: true
             - task: TerraformCLI@0
               displayName: Apply - ${{ parameters.environment }} - ${{ parameters.component }}
@@ -41,4 +41,4 @@ jobs:
                 command: 'apply'
                 commandOptions: '${{ parameters.environment }}${{ parameters.component }}${{ parameters.build }}plan'
                 environmentServiceName: '${{ parameters.service_connection }}'
-                workingDirectory: '$(Pipeline.Workspace)/drop/components/${{ parameters.component }}'
+                workingDirectory: '$(Pipeline.Workspace)/drop'
