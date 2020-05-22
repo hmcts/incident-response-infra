@@ -17,7 +17,7 @@ jobs:
             - task: CopyFiles@2
               inputs:
                 sourceFolder: '$(Pipeline.Workspace)/${{ parameters.environment }}${{ parameters.component }}${{ parameters.build }}plan'
-                targetFolder: '$(Pipeline.Workspace)/drop/${{ parameters.component }}'
+                targetFolder: '$(Pipeline.Workspace)/drop'
             - task: TerraformInstaller@0
               inputs:
                 terraformVersion: ${{ parameters.terraformVersion }}
