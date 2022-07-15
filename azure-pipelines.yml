@@ -8,7 +8,7 @@ trigger:
       - master
 
 variables:
-  terraformVersion: 0.12.25
+  terraformVersion: 0.13.7
   agentPool: 'ubuntu-18.04'
   action:
 
@@ -27,7 +27,7 @@ stages:
             inputs:
               targetType: 'inline'
               script: |
-                Install-Module -Name Pester -Force -Verbose -Scope CurrentUser
+                Install-Module -Name Pester -Force -MaximumVersion 4.99.99 -Verbose -Scope CurrentUser
                 Invoke-Pester ./ci -OutputFormat NUnitXml -OutputFile ./TEST-CI.xml -EnableExit
               pwsh: true
           - task: PublishTestResults@2
