@@ -1,7 +1,7 @@
 data "azurerm_client_config" "this" {}
 
 module "this" {
-  source                  = "git@github.com:hmcts/cnp-module-key-vault?ref=master"
+  source                  = "git::https://github.com/hmcts/cnp-module-key-vault.git?ref=master"
   product                 = var.product
   env                     = var.env
   object_id               = data.azurerm_client_config.this.object_id
