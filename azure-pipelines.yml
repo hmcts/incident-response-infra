@@ -8,7 +8,7 @@ trigger:
       - master
 
 variables:
-  terraformVersion: 0.13.7
+  terraformVersion: 1.2.5
   agentPool: 'ubuntu-18.04'
   action:
 
@@ -47,6 +47,7 @@ stages:
           build: $(Build.BuildNumber)
           agentPool: ${{ variables.agentPool }}
           terraformVersion: ${{ variables.terraformVersion }}
+          builtFrom: $(Build.Repository.Name)
       - job: Archive
         dependsOn: Plan_ptl_response
         pool:
