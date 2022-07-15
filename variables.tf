@@ -1,5 +1,5 @@
 variable "env" {
-  default = "intsvc"
+  default = "ptl"
 }
 
 variable "product" {
