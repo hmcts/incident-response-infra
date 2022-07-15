@@ -5,3 +5,5 @@ variable "env" {
 variable "product" {
   default = "response"
 }
+
+variable "builtFrom" {}
