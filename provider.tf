@@ -1,12 +1,19 @@
 provider "azurerm" {
-  version = "=2.11.0"
   features {}
 }
 
-provider "random" {
-  version = "=2.2"
-}
+provider "random" {}
 
 terraform {
   backend "azurerm" {}
+  required_providers {
+    azurerm = {
+      source = "hashicorp/azurerm"
+      version = "3.14.0"
+    }
+    random = {
+      source = "hashicorp/random"
+      version = "3.3.2"
+    }
+  }
 }
