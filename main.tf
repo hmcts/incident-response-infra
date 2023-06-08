@@ -93,10 +93,3 @@ resource "azurerm_key_vault_secret" "response-db-secret-v14" {
   value        = module.postgresql_flexible.password
   key_vault_id = data.azurerm_key_vault.ptl.id
 }
-
-module "tags" {
-  source      = "git::https://github.com/hmcts/terraform-module-common-tags.git?ref=master"
-  environment = var.env
-  product     = var.product
-  builtFrom   = var.builtFrom
-}
