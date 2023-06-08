@@ -60,3 +60,30 @@ resource "azurerm_postgresql_virtual_network_rule" "cluster-access" {
   server_name         = azurerm_postgresql_server.db.name
   subnet_id           = data.azurerm_subnet.subnet-00.id
 }
+
+
+module "postgresql_flexible" {
+  providers = {
+    azurerm.postgres_network = azurerm.postgres_network
+  }
+
+  source               = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+  env                  = var.env
+  product              = var.product
+  name                 = "hmcts-incident-reponse-flexible"
+  component            = var.component
+  business_area        = "CFT"
+  location             = var.location
+  pgsql_admin_username = "response"
+  pgsql_storage_mb      = var.pgsql_storage_mb
+
+  common_tags          = var.common_tags
+  admin_user_object_id = var.jenkins_AAD_objectId
+  pgsql_databases = [
+    {
+      name : "response"
+    }
+  ]
+  pgsql_firewall_rules = []
+  pgsql_version = "14"
+}
