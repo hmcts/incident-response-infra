@@ -38,6 +38,7 @@ stages:
             condition: always()
 
   - stage: PlanResponse
+    displayName: "Plan Response - PTL"
     dependsOn: GetArtifacts
     jobs:
       - template: pipeline-templates/terraform-plan.yaml
