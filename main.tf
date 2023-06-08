@@ -61,11 +61,7 @@ resource "azurerm_postgresql_virtual_network_rule" "cluster-access" {
   subnet_id           = data.azurerm_subnet.subnet-00.id
 }
 
-data "azurerm_client_config" "current" {
-  providers = {
-    azurerm.postgres_network = azurerm.postgres_network
-  }
-}
+data "azurerm_client_config" "current" {}
 
 module "postgresql_flexible" {
   providers = {
