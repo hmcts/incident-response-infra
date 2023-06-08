@@ -8,7 +8,7 @@ trigger:
       - master
 
 variables:
-  terraformVersion: 1.2.5
+  terraformVersion: 1.4.6
   agentPool: 'ubuntu-latest'
   action:
 
