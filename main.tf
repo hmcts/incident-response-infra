@@ -61,6 +61,11 @@ resource "azurerm_postgresql_virtual_network_rule" "cluster-access" {
   subnet_id           = data.azurerm_subnet.subnet-00.id
 }
 
+data "azurerm_client_config" "current" {
+  providers = {
+    azurerm.postgres_network = azurerm.postgres_network
+  }
+}
 
 module "postgresql_flexible" {
   providers = {
@@ -78,7 +83,7 @@ module "postgresql_flexible" {
   pgsql_storage_mb     = var.pgsql_storage_mb
 
   common_tags          = module.tags.common_tags
-  admin_user_object_id = var.jenkins_AAD_objectId
+  admin_user_object_id = data.azurerm_client_config.current.object_id
   pgsql_databases = [
     {
       name : "response"
