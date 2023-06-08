@@ -5,7 +5,7 @@ provider "azurerm" {
 provider "azurerm" {
   features {}
   alias           = "postgres_network"
-  subscription_id = "8cbc6f36-7c56-4963-9d36-739db5d00b27"
+  subscription_id = "1baf5470-1c3e-40d3-a6f7-74bfbce4b348"
 }
 
 provider "random" {}
