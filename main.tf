@@ -77,7 +77,7 @@ module "postgresql_flexible" {
   pgsql_admin_username = "response"
   pgsql_storage_mb     = var.pgsql_storage_mb
 
-  common_tags          = var.common_tags
+  common_tags          = module.tags.common_tags
   admin_user_object_id = var.jenkins_AAD_objectId
   pgsql_databases = [
     {
@@ -92,4 +92,11 @@ resource "azurerm_key_vault_secret" "response-db-secret-v14" {
   name         = "response-db-password-v14"
   value        = module.postgresql_flexible.password
   key_vault_id = data.azurerm_key_vault.ptl.id
+}
+
+module "tags" {
+  source      = "git::https://github.com/hmcts/terraform-module-common-tags.git?ref=master"
+  environment = var.env
+  product     = var.product
+  builtFrom   = var.builtFrom
 }
