@@ -75,7 +75,7 @@ module "postgresql_flexible" {
   business_area        = "CFT"
   location             = var.location
   pgsql_admin_username = "response"
-  pgsql_storage_mb      = var.pgsql_storage_mb
+  pgsql_storage_mb     = var.pgsql_storage_mb
 
   common_tags          = var.common_tags
   admin_user_object_id = var.jenkins_AAD_objectId
@@ -85,7 +85,7 @@ module "postgresql_flexible" {
     }
   ]
   pgsql_firewall_rules = []
-  pgsql_version = "14"
+  pgsql_version        = "14"
 }
 
 resource "azurerm_key_vault_secret" "response-db-secret-v14" {
