@@ -67,7 +67,7 @@ module "postgresql_flexible" {
     azurerm.postgres_network = azurerm.postgres_network
   }
 
-  source               = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+  source               = "git::https://github.com/hmcts/terraform-module-postgresql-flexible?ref=master"
   env                  = var.env
   product              = var.product
   name                 = "hmcts-incident-reponse-flexible"
@@ -86,4 +86,10 @@ module "postgresql_flexible" {
   ]
   pgsql_firewall_rules = []
   pgsql_version = "14"
+}
+
+resource "azurerm_key_vault_secret" "response-db-secret-v14" {
+  name         = "response-db-password-v14"
+  value        = module.postgresql_flexible.password
+  key_vault_id = data.azurerm_key_vault.ptl.id
 }
