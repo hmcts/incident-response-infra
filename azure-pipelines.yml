@@ -8,8 +8,8 @@ trigger:
       - master
 
 variables:
-  terraformVersion: 1.2.5
-  agentPool: 'ubuntu-18.04'
+  terraformVersion: 1.4.6
+  agentPool: 'ubuntu-latest'
   action:
 
 stages:
@@ -37,6 +37,10 @@ stages:
               failTaskOnFailedTests: true
             condition: always()
 
+  - stage: PlanResponse
+    displayName: "Plan Response - PTL"
+    dependsOn: GetArtifacts
+    jobs:
       - template: pipeline-templates/terraform-plan.yaml
         parameters:
           environment: 'ptl'
@@ -67,7 +71,7 @@ stages:
 
   - stage: ApplyResponse
     displayName: "Apply Response - PTL"
-    dependsOn: GetArtifacts
+    dependsOn: PlanResponse
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     jobs:
       - template: pipeline-templates/terraform-apply.yaml
