@@ -38,6 +38,8 @@ resource "azurerm_postgresql_server" "db" {
 
   ssl_enforcement_enabled          = true
   ssl_minimal_tls_version_enforced = "TLS1_2"
+
+  tags = module.tags.common_tags
 }
 
 resource "azurerm_postgresql_database" "response" {
