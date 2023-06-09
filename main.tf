@@ -68,18 +68,18 @@ module "postgresql_flexible" {
     azurerm.postgres_network = azurerm.postgres_network
   }
 
-  source               = "git::https://github.com/hmcts/terraform-module-postgresql-flexible?ref=master"
-  env                  = var.env
-  product              = var.product
-  name                 = "hmcts-incident-reponse-flexible"
-  component            = var.component
-  business_area        = "CFT"
-  location             = var.location
-  pgsql_admin_username = "response"
-  pgsql_storage_mb     = var.pgsql_storage_mb
-
-  common_tags          = module.tags.common_tags
-  admin_user_object_id = data.azurerm_client_config.current.object_id
+  source                        = "git::https://github.com/hmcts/terraform-module-postgresql-flexible?ref=master"
+  env                           = var.env
+  product                       = var.product
+  name                          = "hmcts-incident-reponse-flexible"
+  component                     = var.component
+  business_area                 = "CFT"
+  location                      = var.location
+  pgsql_admin_username          = "response"
+  pgsql_storage_mb              = var.pgsql_storage_mb
+  enable_read_only_group_access = false
+  common_tags                   = module.tags.common_tags
+  admin_user_object_id          = data.azurerm_client_config.current.object_id
   pgsql_databases = [
     {
       name : "response"
