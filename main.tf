@@ -73,7 +73,7 @@ module "postgresql_flexible" {
   source                        = "git::https://github.com/hmcts/terraform-module-postgresql-flexible?ref=master"
   env                           = var.env
   product                       = var.product
-  name                          = "hmcts-incident-reponse-flexible"
+  name                          = "hmcts-incident-response-flexible"
   component                     = var.component
   business_area                 = "CFT"
   location                      = var.location
