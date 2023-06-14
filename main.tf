@@ -25,6 +25,7 @@ module "postgresql_flexible" {
   enable_read_only_group_access = false
   common_tags                   = module.tags.common_tags
   admin_user_object_id          = data.azurerm_client_config.this.object_id
+  collation                     = "en_US.utf8"
   pgsql_databases = [
     {
       name : "response"
