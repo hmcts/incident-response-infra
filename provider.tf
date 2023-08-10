@@ -2,6 +2,12 @@ provider "azurerm" {
   features {}
 }
 
+provider "azurerm" {
+  features {}
+  alias           = "postgres_network"
+  subscription_id = "1baf5470-1c3e-40d3-a6f7-74bfbce4b348"
+}
+
 provider "random" {}
 
 terraform {
@@ -9,7 +15,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "3.14.0"
+      version = "3.59.0"
     }
     random = {
       source  = "hashicorp/random"
