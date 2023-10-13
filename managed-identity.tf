@@ -1,12 +1,4 @@
-provider "azurerm" {
-  subscription_id            = "1baf5470-1c3e-40d3-a6f7-74bfbce4b348"
-  skip_provider_registration = "true"
-  features {}
-  alias = "managed_identity_infra_sub"
-}
-
 resource "azurerm_user_assigned_identity" "managed_identity" {
-  provider            = azurerm.managed_identity_infra_sub
   name                = "${var.product}-${var.mi_env}-mi"
   resource_group_name = "managed-identities-${var.mi_env}-rg"
   location            = var.location
