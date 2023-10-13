@@ -19,3 +19,7 @@ variable "location" {
 variable "component" {
   default = "incident"
 }
+
+variable "mi_env" {
+  default = "cftptl-intsvc"
+}
