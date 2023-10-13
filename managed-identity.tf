@@ -10,7 +10,7 @@ resource "azurerm_user_assigned_identity" "managed_identity" {
   name                = "${var.product}-${var.mi_env}-mi"
   resource_group_name = "managed-identities-${var.mi_env}-rg"
   location            = var.location
-  tags                = module.ctags.common_tags
+  tags                = module.tags.common_tags
 }
 
 resource "azurerm_key_vault_access_policy" "managed_identity_access_policy" {
