@@ -1,5 +1,4 @@
 variable "env" {
-  default = "ptl"
 }
 
 variable "product" {
@@ -21,5 +20,4 @@ variable "component" {
 }
 
 variable "mi_env" {
-  default = "cftptl-intsvc"
 }
