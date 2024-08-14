@@ -1,3 +1,2 @@
-variable "env" = "ptlsbox"
-
-variable "mi_env" = "cftsbox-intsvc"
+env = "ptlsbox" 
+mi_env = "cftsbox-intsvc"
