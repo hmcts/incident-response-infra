@@ -51,7 +51,7 @@ stages:
             condition: always()
 
   - ${{ each component in parameters.environment_components }}:
-    - stage: PlanResponse ${{ component.environment }}
+    - stage: PlanResponse_${{ component.environment }}
       displayName: "Plan Response - ${{ component.environment }}"
       dependsOn: GetArtifacts
       jobs:
@@ -83,9 +83,9 @@ stages:
             - task: PublishBuildArtifacts@1
               displayName: 'Publish Artifact: drop'
 
-    - stage: ApplyResponse ${{ component.environment }}
+    - stage: ApplyResponse_${{ component.environment }}
       displayName: "Apply Response - ${{ component.environment }}"
-      dependsOn: PlanResponse ${{ component.environment }}"
+      dependsOn: PlanResponse ${{ component.environment }}
       condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
       jobs:
         - template: pipeline-templates/terraform-apply.yaml
