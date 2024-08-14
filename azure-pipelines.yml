@@ -48,51 +48,51 @@ stages:
               failTaskOnFailedTests: true
             condition: always()
 
-- ${{ each env in parameters.environments }}
-  - stage: PlanResponse
-    displayName: "Plan Response - ${{ env.name }}"
-    dependsOn: GetArtifacts
-    jobs:
-      - template: pipeline-templates/terraform-plan.yaml
-        parameters:
-          environment: ${{ env.name }}
-          component: 'response'
-          service_connection: ${{ env.service_connection }}
-          storage_account_rg: ${{ env.storage_account_rg }}
-          storage_account_name: ${{ env.storage_account_name }}
-          build: $(Build.BuildNumber)
-          agentPool: ${{ variables.agentPool }}
-          terraformVersion: ${{ variables.terraformVersion }}
-          builtFrom: $(Build.Repository.Name)
-      - job: Archive
-        dependsOn: Plan_ptl_response
-        pool:
-          vmImage: ${{ variables.agentPool }}
-        steps:
-          - task: CopyFiles@2
-            displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
-            inputs:
-              Contents: |
-                *.tf
-                *.tfvars
-                *tfplan
-              TargetFolder: '$(Build.ArtifactStagingDirectory)'
+  - ${{ each env in parameters.environments }}
+    - stage: PlanResponse
+      displayName: "Plan Response - ${{ env.name }}"
+      dependsOn: GetArtifacts
+      jobs:
+        - template: pipeline-templates/terraform-plan.yaml
+          parameters:
+            environment: ${{ env.name }}
+            component: 'response'
+            service_connection: ${{ env.service_connection }}
+            storage_account_rg: ${{ env.storage_account_rg }}
+            storage_account_name: ${{ env.storage_account_name }}
+            build: $(Build.BuildNumber)
+            agentPool: ${{ variables.agentPool }}
+            terraformVersion: ${{ variables.terraformVersion }}
+            builtFrom: $(Build.Repository.Name)
+        - job: Archive
+          dependsOn: Plan_ptl_response
+          pool:
+            vmImage: ${{ variables.agentPool }}
+          steps:
+            - task: CopyFiles@2
+              displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
+              inputs:
+                Contents: |
+                  *.tf
+                  *.tfvars
+                  *tfplan
+                TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
-          - task: PublishBuildArtifacts@1
-            displayName: 'Publish Artifact: drop'
+            - task: PublishBuildArtifacts@1
+              displayName: 'Publish Artifact: drop'
 
-  - stage: ApplyResponse
-    displayName: "Apply Response - ${{ env.name }}"
-    dependsOn: PlanResponse
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-    jobs:
-      - template: pipeline-templates/terraform-apply.yaml
-        parameters:
-          environment: ${{ env.name }}
-          component: 'response'
-          service_connection: ${{ env.service_connection }}
-          storage_account_rg: ${{ env.storage_account_rg }}
-          storage_account_name: ${{ env.storage_account_name }}
-          build: $(Build.BuildNumber)
-          agentPool: ${{ variables.agentPool }}
-          terraformVersion: ${{ variables.terraformVersion }}
+    - stage: ApplyResponse
+      displayName: "Apply Response - ${{ env.name }}"
+      dependsOn: PlanResponse
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+      jobs:
+        - template: pipeline-templates/terraform-apply.yaml
+          parameters:
+            environment: ${{ env.name }}
+            component: 'response'
+            service_connection: ${{ env.service_connection }}
+            storage_account_rg: ${{ env.storage_account_rg }}
+            storage_account_name: ${{ env.storage_account_name }}
+            build: $(Build.BuildNumber)
+            agentPool: ${{ variables.agentPool }}
+            terraformVersion: ${{ variables.terraformVersion }}
