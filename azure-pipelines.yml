@@ -38,6 +38,54 @@ stages:
             condition: always()
 
   - stage: PlanResponse
+    displayName: "Plan Response - Sandbox-PTL"
+    dependsOn: GetArtifacts
+    jobs:
+      - template: pipeline-templates/terraform-plan.yaml
+        parameters:
+          environment: 'ptlsbox'
+          component: 'response'
+          service_connection: 'DTS-CFTSBOX-INTSVC'
+          storage_account_rg: 'core-infra-intsvc-rg'
+          storage_account_name: 'cftsboxintsvc'
+          build: $(Build.BuildNumber)
+          agentPool: ${{ variables.agentPool }}
+          terraformVersion: ${{ variables.terraformVersion }}
+          builtFrom: $(Build.Repository.Name)
+      - job: Archive
+        dependsOn: Plan_sandbox_ptl_response
+        pool:
+          vmImage: ${{ variables.agentPool }}
+        steps:
+          - task: CopyFiles@2
+            displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
+            inputs:
+              Contents: |
+                *.tf
+                *.tfvars
+                *tfplan
+              TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish Artifact: drop'
+
+  - stage: ApplyResponse
+    displayName: "Apply Response - Sandbox-PTL"
+    dependsOn: PlanResponse
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    jobs:
+      - template: pipeline-templates/terraform-apply.yaml
+        parameters:
+          environment: 'ptlsbox'
+          component: 'response'
+          service_connection: 'DTS-CFTSBOX-INTSVC'
+          storage_account_rg: 'core-infra-intsvc-rg'
+          storage_account_name: 'cftsboxintsvc'
+          build: $(Build.BuildNumber)
+          agentPool: ${{ variables.agentPool }}
+          terraformVersion: ${{ variables.terraformVersion }}
+
+  - stage: PlanResponse
     displayName: "Plan Response - PTL"
     dependsOn: GetArtifacts
     jobs:
