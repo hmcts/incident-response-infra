@@ -13,7 +13,7 @@ variables:
   action:
 
 parameters:
-  - environments:
+  environments:
     - name: 'ptlsbox'
       service_connection: 'DTS-CFTSBOX-INTSVC'
       storage_account_rg: 'core-infra-intsvc-rg'
@@ -65,7 +65,7 @@ stages:
             terraformVersion: ${{ variables.terraformVersion }}
             builtFrom: $(Build.Repository.Name)
         - job: Archive
-          dependsOn: Plan_ptl_response
+          dependsOn: Plan_${{ env.name }}_response
           pool:
             vmImage: ${{ variables.agentPool }}
           steps:
