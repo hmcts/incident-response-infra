@@ -51,7 +51,7 @@ stages:
             condition: always()
 
   - ${{ each component in parameters.environment_components }}:
-    - stage: PlanResponse
+    - stage: PlanResponse - ${{ component.environment }}"
       displayName: "Plan Response - ${{ component.environment }}"
       dependsOn: GetArtifacts
       jobs:
@@ -83,7 +83,7 @@ stages:
             - task: PublishBuildArtifacts@1
               displayName: 'Publish Artifact: drop'
 
-    - stage: ApplyResponse
+    - stage: ApplyResponse - ${{ component.environment }}"
       displayName: "Apply Response - ${{ component.environment }}"
       dependsOn: PlanResponse
       condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
