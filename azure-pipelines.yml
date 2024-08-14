@@ -67,7 +67,7 @@ stages:
             terraformVersion: ${{ variables.terraformVersion }}
             builtFrom: $(Build.Repository.Name)
         - job: Archive
-          dependsOn: Plan_${{ env.name }}_response
+          dependsOn: Plan_${{ component.environment }}_response
           pool:
             vmImage: ${{ variables.agentPool }}
           steps:
