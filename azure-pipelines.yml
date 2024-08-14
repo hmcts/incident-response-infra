@@ -48,7 +48,7 @@ stages:
               failTaskOnFailedTests: true
             condition: always()
 
-  - ${{ each env in parameters.environments }}
+  - ${{ each env in parameters.environments }}:
     - stage: PlanResponse
       displayName: "Plan Response - ${{ env.name }}"
       dependsOn: GetArtifacts
