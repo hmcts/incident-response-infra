@@ -12,6 +12,17 @@ variables:
   agentPool: 'ubuntu-latest'
   action:
 
+parameters:
+  environments:
+  - name: 'ptlsbox'
+    service_connection: 'DTS-CFTSBOX-INTSVC'
+    storage_account_rg: 'core-infra-intsvc-rg'
+    storage_account_name: 'cftsboxintsvc'
+  - name: 'ptl'
+    service_connection: 'DTS-CFTPTL-INTSVC'
+    storage_account_rg: 'core-infra-intsvc-rg'
+    storage_account_name: 'cftptlintsvc'
+
 stages:
   - stage: GetArtifacts
     jobs:
@@ -37,65 +48,18 @@ stages:
               failTaskOnFailedTests: true
             condition: always()
 
+- ${{ each env in parameters.environments }}
   - stage: PlanResponse
-    displayName: "Plan Response - Sandbox-PTL"
+    displayName: "Plan Response - ${{ env.name }}"
     dependsOn: GetArtifacts
     jobs:
       - template: pipeline-templates/terraform-plan.yaml
         parameters:
-          environment: 'ptlsbox'
+          environment: ${{ env.name }}
           component: 'response'
-          service_connection: 'DTS-CFTSBOX-INTSVC'
-          storage_account_rg: 'core-infra-intsvc-rg'
-          storage_account_name: 'cftsboxintsvc'
-          build: $(Build.BuildNumber)
-          agentPool: ${{ variables.agentPool }}
-          terraformVersion: ${{ variables.terraformVersion }}
-          builtFrom: $(Build.Repository.Name)
-      - job: Archive
-        dependsOn: Plan_sandbox_ptl_response
-        pool:
-          vmImage: ${{ variables.agentPool }}
-        steps:
-          - task: CopyFiles@2
-            displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
-            inputs:
-              Contents: |
-                *.tf
-                *.tfvars
-                *tfplan
-              TargetFolder: '$(Build.ArtifactStagingDirectory)'
-
-          - task: PublishBuildArtifacts@1
-            displayName: 'Publish Artifact: drop'
-
-  - stage: ApplyResponse
-    displayName: "Apply Response - Sandbox-PTL"
-    dependsOn: PlanResponse
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-    jobs:
-      - template: pipeline-templates/terraform-apply.yaml
-        parameters:
-          environment: 'ptlsbox'
-          component: 'response'
-          service_connection: 'DTS-CFTSBOX-INTSVC'
-          storage_account_rg: 'core-infra-intsvc-rg'
-          storage_account_name: 'cftsboxintsvc'
-          build: $(Build.BuildNumber)
-          agentPool: ${{ variables.agentPool }}
-          terraformVersion: ${{ variables.terraformVersion }}
-
-  - stage: PlanResponse
-    displayName: "Plan Response - PTL"
-    dependsOn: GetArtifacts
-    jobs:
-      - template: pipeline-templates/terraform-plan.yaml
-        parameters:
-          environment: 'ptl'
-          component: 'response'
-          service_connection: 'DTS-CFTPTL-INTSVC'
-          storage_account_rg: 'core-infra-intsvc-rg'
-          storage_account_name: 'cftptlintsvc'
+          service_connection: ${{ env.service_connection }}
+          storage_account_rg: ${{ env.storage_account_rg }}
+          storage_account_name: ${{ env.storage_account_name }}
           build: $(Build.BuildNumber)
           agentPool: ${{ variables.agentPool }}
           terraformVersion: ${{ variables.terraformVersion }}
@@ -118,17 +82,17 @@ stages:
             displayName: 'Publish Artifact: drop'
 
   - stage: ApplyResponse
-    displayName: "Apply Response - PTL"
+    displayName: "Apply Response - ${{ env.name }}"
     dependsOn: PlanResponse
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     jobs:
       - template: pipeline-templates/terraform-apply.yaml
         parameters:
-          environment: 'ptl'
+          environment: ${{ env.name }}
           component: 'response'
-          service_connection: 'DTS-CFTPTL-INTSVC'
-          storage_account_rg: 'core-infra-intsvc-rg'
-          storage_account_name: 'cftptlintsvc'
+          service_connection: ${{ env.service_connection }}
+          storage_account_rg: ${{ env.storage_account_rg }}
+          storage_account_name: ${{ env.storage_account_name }}
           build: $(Build.BuildNumber)
           agentPool: ${{ variables.agentPool }}
           terraformVersion: ${{ variables.terraformVersion }}
