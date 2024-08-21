@@ -23,7 +23,6 @@ module "postgresql_flexible" {
   pgsql_admin_username          = "response"
   pgsql_storage_mb              = var.pgsql_storage_mb
   enable_read_only_group_access = false
-  trigger_password_reset        = " "
   common_tags                   = module.tags.common_tags
   admin_user_object_id          = data.azurerm_client_config.this.object_id
   collation                     = "en_US.utf8"
