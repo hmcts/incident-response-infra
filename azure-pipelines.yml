@@ -20,10 +20,12 @@ parameters:
       service_connection: 'DTS-CFTSBOX-INTSVC'
       storage_account_rg: 'core-infra-intsvc-rg'
       storage_account_name: 'cftsboxintsvc'
+      tfvarsFile: 'ptlsbox.tfvars'
     - environment: 'ptl'
       service_connection: 'DTS-CFTPTL-INTSVC'
       storage_account_rg: 'core-infra-intsvc-rg'
       storage_account_name: 'cftptlintsvc'
+      tfvarsFile: 'ptl.tfvars'
 
 stages:
   - stage: GetArtifacts
