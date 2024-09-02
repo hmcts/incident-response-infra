@@ -4,7 +4,7 @@ resource "azurerm_resource_group" "rg" {
 }
 
 data "azurerm_key_vault" "ptl" {
-  name                = "cftptl-intsvc"
+  name                = var.keyvault_data_name
   resource_group_name = "core-infra-intsvc-rg"
 }
 

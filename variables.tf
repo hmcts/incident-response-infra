@@ -27,3 +27,6 @@ variable "create_postgres" {
   type        = bool
   default     = true
 }
+
+variable "keyvault_data_name" {
+}
