@@ -1,2 +1,2 @@
-env    = "ptlsbox"
+env    = "sandbox"
 mi_env = "cftsbox-intsvc"
