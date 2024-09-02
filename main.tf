@@ -38,6 +38,6 @@ module "postgresql_flexible" {
 
 resource "azurerm_key_vault_secret" "response-db-secret-v14" {
   name         = "response-db-password-v14"
-  value        = module.postgresql_flexible.password
+  value        = module.postgresql_flexible[0].password
   key_vault_id = data.azurerm_key_vault.ptl.id
 }
