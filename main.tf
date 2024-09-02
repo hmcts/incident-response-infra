@@ -12,6 +12,7 @@ module "postgresql_flexible" {
   providers = {
     azurerm.postgres_network = azurerm.postgres_network
   }
+  count = var.create_postgres ? 1 : 0
 
   source                        = "git::https://github.com/hmcts/terraform-module-postgresql-flexible?ref=master"
   env                           = var.env

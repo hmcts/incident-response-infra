@@ -21,3 +21,9 @@ variable "component" {
 
 variable "mi_env" {
 }
+
+variable "create_postgres" {
+  description = "Whether to create the PostgreSQL server"
+  type        = bool
+  default     = true
+}
