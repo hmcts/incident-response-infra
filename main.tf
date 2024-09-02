@@ -34,10 +34,6 @@ module "postgresql_flexible" {
   ]
   pgsql_firewall_rules = []
   pgsql_version        = "14"
-
-  lifecycle {
-    prevent_destroy = true
-  }
 }
 
 resource "azurerm_key_vault_secret" "response-db-secret-v14" {
