@@ -35,7 +35,7 @@ module "postgresql_flexible" {
   pgsql_firewall_rules = []
   pgsql_version        = "14"
 
-    lifecycle {
+  lifecycle {
     prevent_destroy = true
   }
 }
