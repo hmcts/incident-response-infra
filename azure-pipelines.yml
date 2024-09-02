@@ -68,6 +68,7 @@ stages:
             agentPool: ${{ variables.agentPool }}
             terraformVersion: ${{ variables.terraformVersion }}
             builtFrom: $(Build.Repository.Name)
+            tfvarsFile: ${{ component.tfvarsFile }}
         - job: Archive
           dependsOn: Plan_${{ component.environment }}_response
           pool:
@@ -100,3 +101,4 @@ stages:
             build: $(Build.BuildNumber)
             agentPool: ${{ variables.agentPool }}
             terraformVersion: ${{ variables.terraformVersion }}
+            tfvarsFile: ${{ component.tfvarsFile }}
