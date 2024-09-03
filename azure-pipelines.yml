@@ -101,4 +101,3 @@ stages:
             build: $(Build.BuildNumber)
             agentPool: ${{ variables.agentPool }}
             terraformVersion: ${{ variables.terraformVersion }}
-            tfvarsFile: ${{ component.tfvarsFile }}
