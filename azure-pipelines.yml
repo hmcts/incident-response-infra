@@ -12,6 +12,21 @@ variables:
   agentPool: 'ubuntu-latest'
   action:
 
+parameters:
+  - name: environment_components
+    type: object
+    default:
+    - environment: 'ptlsbox'
+      service_connection: 'DTS-CFTSBOX-INTSVC'
+      storage_account_rg: 'core-infra-intsvc-rg'
+      storage_account_name: 'cftsboxintsvc'
+      tfvarsFile: 'ptlsbox.tfvars'
+    - environment: 'ptl'
+      service_connection: 'DTS-CFTPTL-INTSVC'
+      storage_account_rg: 'core-infra-intsvc-rg'
+      storage_account_name: 'cftptlintsvc'
+      tfvarsFile: 'ptl.tfvars'
+
 stages:
   - stage: GetArtifacts
     jobs:
@@ -37,50 +52,53 @@ stages:
               failTaskOnFailedTests: true
             condition: always()
 
-  - stage: PlanResponse
-    displayName: "Plan Response - PTL"
-    dependsOn: GetArtifacts
-    jobs:
-      - template: pipeline-templates/terraform-plan.yaml
-        parameters:
-          environment: 'ptl'
-          component: 'response'
-          service_connection: 'DTS-CFTPTL-INTSVC'
-          storage_account_rg: 'core-infra-intsvc-rg'
-          storage_account_name: 'cftptlintsvc'
-          build: $(Build.BuildNumber)
-          agentPool: ${{ variables.agentPool }}
-          terraformVersion: ${{ variables.terraformVersion }}
-          builtFrom: $(Build.Repository.Name)
-      - job: Archive
-        dependsOn: Plan_ptl_response
-        pool:
-          vmImage: ${{ variables.agentPool }}
-        steps:
-          - task: CopyFiles@2
-            displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
-            inputs:
-              Contents: |
-                *.tf
-                *.tfvars
-                *tfplan
-              TargetFolder: '$(Build.ArtifactStagingDirectory)'
+  - ${{ each component in parameters.environment_components }}:
+    - stage: PlanResponse_${{ component.environment }}
+      displayName: "Plan Response - ${{ component.environment }}"
+      dependsOn: GetArtifacts
+      jobs:
+        - template: pipeline-templates/terraform-plan.yaml
+          parameters:
+            environment: ${{ component.environment }}
+            component: 'response'
+            service_connection: ${{ component.service_connection }}
+            storage_account_rg: ${{ component.storage_account_rg }}
+            storage_account_name: ${{ component.storage_account_name }}
+            build: $(Build.BuildNumber)
+            agentPool: ${{ variables.agentPool }}
+            terraformVersion: ${{ variables.terraformVersion }}
+            builtFrom: $(Build.Repository.Name)
+            tfvarsFile: ${{ component.tfvarsFile }}
+        - job: Archive
+          dependsOn: Plan_${{ component.environment }}_response
+          pool:
+            vmImage: ${{ variables.agentPool }}
+          steps:
+            - task: CopyFiles@2
+              displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
+              inputs:
+                Contents: |
+                  *.tf
+                  *.tfvars
+                  *tfplan
+                TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
-          - task: PublishBuildArtifacts@1
-            displayName: 'Publish Artifact: drop'
+            - task: PublishBuildArtifacts@1
+              displayName: 'Publish Artifact: drop'
 
-  - stage: ApplyResponse
-    displayName: "Apply Response - PTL"
-    dependsOn: PlanResponse
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-    jobs:
-      - template: pipeline-templates/terraform-apply.yaml
-        parameters:
-          environment: 'ptl'
-          component: 'response'
-          service_connection: 'DTS-CFTPTL-INTSVC'
-          storage_account_rg: 'core-infra-intsvc-rg'
-          storage_account_name: 'cftptlintsvc'
-          build: $(Build.BuildNumber)
-          agentPool: ${{ variables.agentPool }}
-          terraformVersion: ${{ variables.terraformVersion }}
+    - stage: ApplyResponse_${{ component.environment }}
+      displayName: "Apply Response - ${{ component.environment }}"
+      dependsOn: PlanResponse_${{ component.environment }}
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+      jobs:
+        - template: pipeline-templates/terraform-apply.yaml
+          parameters:
+            environment: ${{ component.environment }}
+            component: 'response'
+            service_connection: ${{ component.service_connection }}
+            storage_account_rg: ${{ component.storage_account_rg }}
+            storage_account_name: ${{ component.storage_account_name }}
+            build: $(Build.BuildNumber)
+            agentPool: ${{ variables.agentPool }}
+            terraformVersion: ${{ variables.terraformVersion }}
+            tfvarsFile: ${{ component.tfvarsFile }}

@@ -1,5 +1,4 @@
 variable "env" {
-  default = "ptl"
 }
 
 variable "product" {
@@ -21,5 +20,13 @@ variable "component" {
 }
 
 variable "mi_env" {
-  default = "cftptl-intsvc"
+}
+
+variable "create_postgres" {
+  description = "Whether to create the PostgreSQL server"
+  type        = bool
+  default     = true
+}
+
+variable "keyvault_data_name" {
 }

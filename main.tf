@@ -4,7 +4,7 @@ resource "azurerm_resource_group" "rg" {
 }
 
 data "azurerm_key_vault" "ptl" {
-  name                = "cftptl-intsvc"
+  name                = var.keyvault_data_name
   resource_group_name = "core-infra-intsvc-rg"
 }
 
@@ -12,6 +12,7 @@ module "postgresql_flexible" {
   providers = {
     azurerm.postgres_network = azurerm.postgres_network
   }
+  count = var.create_postgres ? 1 : 0
 
   source                        = "git::https://github.com/hmcts/terraform-module-postgresql-flexible?ref=master"
   env                           = var.env
@@ -36,7 +37,9 @@ module "postgresql_flexible" {
 }
 
 resource "azurerm_key_vault_secret" "response-db-secret-v14" {
+  count = var.create_postgres ? 1 : 0
+
   name         = "response-db-password-v14"
-  value        = module.postgresql_flexible.password
+  value        = module.postgresql_flexible[0].password
   key_vault_id = data.azurerm_key_vault.ptl.id
 }

@@ -22,7 +22,7 @@ jobs:
         displayName: Plan - ${{ parameters.environment }} - ${{ parameters.component }}
         inputs:
           command: 'plan'
-          commandOptions: '-var builtFrom=${{ parameters.builtFrom }} -out=${{ parameters.environment }}${{ parameters.component }}${{ parameters.build }}plan'
+          commandOptions: '-var-file=${{ parameters.tfvarsFile }} -var builtFrom=${{ parameters.builtFrom }} -out=${{ parameters.environment }}${{ parameters.component }}${{ parameters.build }}plan'
           workingDirectory: '$(System.DefaultWorkingDirectory)'
           environmentServiceName: '${{ parameters.service_connection }}'
       - task: Bash@3

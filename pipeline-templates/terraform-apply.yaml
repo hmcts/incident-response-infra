@@ -39,6 +39,6 @@ jobs:
               displayName: Apply - ${{ parameters.environment }} - ${{ parameters.component }}
               inputs:
                 command: 'apply'
-                commandOptions: '${{ parameters.environment }}${{ parameters.component }}${{ parameters.build }}plan'
+                commandOptions: 'var-file=${{ parameters.tfvarsFile }} ${{ parameters.environment }}${{ parameters.component }}${{ parameters.build }}plan'
                 environmentServiceName: '${{ parameters.service_connection }}'
                 workingDirectory: '$(Pipeline.Workspace)/drop'
