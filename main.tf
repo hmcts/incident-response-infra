@@ -14,7 +14,7 @@ module "postgresql_flexible" {
   }
   count = var.create_postgres ? 1 : 0
 
-  source                        = "git::https://github.com/hmcts/terraform-module-postgresql-flexible?ref=master"
+  source                        = "git::https://github.com/hmcts/terraform-module-postgresql-flexible?ref=DTSPO-30107-additional-postgres-admins"
   env                           = var.env
   product                       = var.product
   name                          = "hmcts-incident-response-flexible"
@@ -26,6 +26,7 @@ module "postgresql_flexible" {
   enable_read_only_group_access = false
   common_tags                   = module.tags.common_tags
   admin_user_object_id          = data.azurerm_client_config.this.object_id
+  preserve_legacy_jenkins_admin = false
   collation                     = "en_US.utf8"
   pgsql_databases = [
     {
