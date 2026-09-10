@@ -7,97 +7,84 @@ trigger:
     include:
       - master
 
+resources:
+  repositories:
+  - repository: cnp-azuredevops-libraries
+    type: github
+    ref: refs/heads/master
+    name: hmcts/cnp-azuredevops-libraries
+    endpoint: 'hmcts'
+
 variables:
-  terraformVersion: 1.4.6
-  agentPool: 'ubuntu-latest'
-  action:
+  - name: terraformVersion
+    value: 1.4.6
+  - name: timeoutInMinutes
+    value: "60"
+  - name: agentPool
+    value: ubuntu-22.04
+  - name: build
+    value: $(Build.BuildNumber)
+  - name: product
+    value: cft-jenkins
+  - name: terraformInitSubscription
+    value: 04d27a32-7a07-48b3-95b8-3c8691e1a263
+  - template: vars/input-variables.yaml@cnp-azuredevops-libraries
+    
 
 parameters:
   - name: environment_components
     type: object
     default:
-    - environment: 'ptlsbox'
+    - deployment: 'ptlsbox_response'
+      environment: 'ptlsbox'
+      component: 'response'
       service_connection: 'DTS-CFTSBOX-INTSVC'
       storage_account_rg: 'core-infra-intsvc-rg'
       storage_account_name: 'cftsboxintsvc'
-      tfvarsFile: 'ptlsbox.tfvars'
-    - environment: 'ptl'
+      tfvars_file: 'ptlsbox.tfvars'
+      backend_resource_group_name: ''
+      dependsOn: 'Precheck'
+    - deployment: 'ptl_response'
+      environment: 'ptl'
+      component: 'response'
       service_connection: 'DTS-CFTPTL-INTSVC'
       storage_account_rg: 'core-infra-intsvc-rg'
       storage_account_name: 'cftptlintsvc'
-      tfvarsFile: 'ptl.tfvars'
+      tfvars_file: 'ptl.tfvars'
+      backend_resource_group_name: ''
+      dependsOn: 'ptlsbox_response'
 
 stages:
-  - stage: GetArtifacts
+  - stage: Precheck
     jobs:
-      - job: Validate
+      - job: Precheck
         pool:
           vmImage: ${{ variables.agentPool }}
+        timeoutInMinutes: ${{ variables.timeoutInMinutes }}
         steps:
-          - task: TerraformInstaller@2
-            inputs:
-              terraformVersion: ${{ variables.terraformVersion }}
-          - task: PowerShell@2
-            displayName: Run tests
-            inputs:
-              targetType: 'inline'
-              script: |
-                Install-Module -Name Pester -Force -MaximumVersion 4.99.99 -Verbose -Scope CurrentUser
-                Invoke-Pester ./ci -OutputFormat NUnitXml -OutputFile ./TEST-CI.xml -EnableExit
-              pwsh: true
-          - task: PublishTestResults@2
-            displayName: 'Publish Test Results **/TEST-*.xml'
-            inputs:
-              testResultsFormat: NUnit
-              failTaskOnFailedTests: true
-            condition: always()
+          - template: steps/terraform-precheck.yaml@cnp-azuredevops-libraries
+            parameters:
+              keyvaultName: 'infra-vault-nonprod'
+              keyvaultSecret: 'azure-devops-sp-token'
+              serviceConnection: 'DCD-CFT-Sandbox'
+              overrideAction: ${{ parameters.overrideAction }}
 
-  - ${{ each component in parameters.environment_components }}:
-    - stage: PlanResponse_${{ component.environment }}
-      displayName: "Plan Response - ${{ component.environment }}"
-      dependsOn: GetArtifacts
+  - ${{ each deployment in parameters.environment_components }}:
+    - stage: ${{ deployment.deployment }}
+      dependsOn: ${{ deployment.dependsOn }}
       jobs:
-        - template: pipeline-templates/terraform-plan.yaml
-          parameters:
-            environment: ${{ component.environment }}
-            component: 'response'
-            service_connection: ${{ component.service_connection }}
-            storage_account_rg: ${{ component.storage_account_rg }}
-            storage_account_name: ${{ component.storage_account_name }}
-            build: $(Build.BuildNumber)
-            agentPool: ${{ variables.agentPool }}
-            terraformVersion: ${{ variables.terraformVersion }}
-            builtFrom: $(Build.Repository.Name)
-            tfvarsFile: ${{ component.tfvarsFile }}
-        - job: Archive
-          dependsOn: Plan_${{ component.environment }}_response
+        - job: TerraformPlanApply
           pool:
             vmImage: ${{ variables.agentPool }}
+          timeoutInMinutes: ${{ variables.timeoutInMinutes }}
           steps:
-            - task: CopyFiles@2
-              displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
-              inputs:
-                Contents: |
-                  *.tf
-                  *.tfvars
-                  *tfplan
-                TargetFolder: '$(Build.ArtifactStagingDirectory)'
-
-            - task: PublishBuildArtifacts@1
-              displayName: 'Publish Artifact: drop'
-
-    - stage: ApplyResponse_${{ component.environment }}
-      displayName: "Apply Response - ${{ component.environment }}"
-      dependsOn: PlanResponse_${{ component.environment }}
-      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-      jobs:
-        - template: pipeline-templates/terraform-apply.yaml
-          parameters:
-            environment: ${{ component.environment }}
-            component: 'response'
-            service_connection: ${{ component.service_connection }}
-            storage_account_rg: ${{ component.storage_account_rg }}
-            storage_account_name: ${{ component.storage_account_name }}
-            build: $(Build.BuildNumber)
-            agentPool: ${{ variables.agentPool }}
-            terraformVersion: ${{ variables.terraformVersion }}
+          - template: steps/terraform.yaml@cnp-azuredevops-libraries
+            parameters:
+              overrideAction: ${{ parameters.overrideAction }}
+              environment: ${{ deployment.environment }}
+              component: ${{ deployment.component }}
+              serviceConnection: ${{ deployment.service_connection }}
+              terraformInitSubscription: ${{ variables.terraformInitSubscription }}
+              backendResourceGroupName: ${{ deployment.backend_resource_group_name }}
+              product: ${{ variables.product }}
+              tfvars_file: ${{ deployment.tfvars_file }}
