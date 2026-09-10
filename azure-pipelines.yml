@@ -48,7 +48,7 @@ parameters:
       service_connection: 'DTS-CFTSBOX-INTSVC'
       storage_account_rg: 'core-infra-intsvc-rg'
       storage_account_name: 'cftsboxintsvc'
-      tfvars_file: 'ptlsbox.tfvars'
+      tfVarsFile: 'ptlsbox.tfvars'
       backend_resource_group_name: ''
       dependsOn: 'Precheck'
     - deployment: 'ptl_response'
@@ -57,7 +57,7 @@ parameters:
       service_connection: 'DTS-CFTPTL-INTSVC'
       storage_account_rg: 'core-infra-intsvc-rg'
       storage_account_name: 'cftptlintsvc'
-      tfvars_file: 'ptl.tfvars'
+      tfVarsFile: 'ptl.tfvars'
       backend_resource_group_name: ''
       dependsOn: 'ptlsbox_response'
 
@@ -94,4 +94,4 @@ stages:
               terraformInitSubscription: ${{ variables.terraformInitSubscription }}
               backendResourceGroupName: ${{ deployment.backend_resource_group_name }}
               product: ${{ variables.product }}
-              tfvars_file: ${{ deployment.tfvars_file }}
+              tfVarsFile: ${{ deployment.tfVarsFile }}
