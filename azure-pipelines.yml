@@ -26,8 +26,6 @@ variables:
     value: $(Build.BuildNumber)
   - name: product
     value: cft-jenkins
-  - name: terraformInitSubscription
-    value: 04d27a32-7a07-48b3-95b8-3c8691e1a263
   - template: vars/input-variables.yaml@cnp-azuredevops-libraries
 
 parameters:
@@ -48,6 +46,7 @@ parameters:
       storage_account_rg: 'core-infra-intsvc-rg'
       storage_account_name: 'cftsboxintsvc'
       backend_resource_group_name: 'core-infra-intsvc-rg'
+      terraformInitSubscription: '1497c3d7-ab6d-4bb7-8a10-b51d03189ee3'
       dependsOn: 'Precheck'
     - deployment: 'ptl_response'
       environment: 'ptl'
@@ -56,6 +55,7 @@ parameters:
       storage_account_rg: 'core-infra-intsvc-rg'
       storage_account_name: 'cftptlintsvc'
       backend_resource_group_name: 'core-infra-intsvc-rg'
+      terraformInitSubscription: '1baf5470-1c3e-40d3-a6f7-74bfbce4b348'
       dependsOn: 'ptlsbox_response'
 
 stages:
@@ -88,7 +88,7 @@ stages:
               environment: ${{ deployment.environment }}
               component: ${{ deployment.component }}
               serviceConnection: ${{ deployment.service_connection }}
-              terraformInitSubscription: ${{ variables.terraformInitSubscription }}
+              terraformInitSubscription: ${{ deployment.terraformInitSubscription }}
               backendResourceGroupName: ${{ deployment.backend_resource_group_name }}
               backendStorageAccountName: ${{ deployment.storage_account_name }}
               backendContainerName: 'tfstate'
