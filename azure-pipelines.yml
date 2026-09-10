@@ -25,7 +25,7 @@ variables:
   - name: build
     value: $(Build.BuildNumber)
   - name: product
-    value: cft-jenkins
+    value: response
   - template: vars/input-variables.yaml@cnp-azuredevops-libraries
 
 parameters:
