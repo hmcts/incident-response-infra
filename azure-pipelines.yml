@@ -17,7 +17,7 @@ resources:
 
 variables:
   - name: terraformVersion
-    value: 1.4.6
+    value: 1.4.5
   - name: timeoutInMinutes
     value: "60"
   - name: agentPool
@@ -29,7 +29,6 @@ variables:
   - name: terraformInitSubscription
     value: 04d27a32-7a07-48b3-95b8-3c8691e1a263
   - template: vars/input-variables.yaml@cnp-azuredevops-libraries
-    
 
 parameters:
   - name: overrideAction
@@ -48,7 +47,7 @@ parameters:
       service_connection: 'DTS-CFTSBOX-INTSVC'
       storage_account_rg: 'core-infra-intsvc-rg'
       storage_account_name: 'cftsboxintsvc'
-      backend_resource_group_name: ''
+      backend_resource_group_name: 'core-infra-intsvc-rg'
       dependsOn: 'Precheck'
     - deployment: 'ptl_response'
       environment: 'ptl'
@@ -56,7 +55,7 @@ parameters:
       service_connection: 'DTS-CFTPTL-INTSVC'
       storage_account_rg: 'core-infra-intsvc-rg'
       storage_account_name: 'cftptlintsvc'
-      backend_resource_group_name: ''
+      backend_resource_group_name: 'core-infra-intsvc-rg'
       dependsOn: 'ptlsbox_response'
 
 stages:
@@ -91,4 +90,7 @@ stages:
               serviceConnection: ${{ deployment.service_connection }}
               terraformInitSubscription: ${{ variables.terraformInitSubscription }}
               backendResourceGroupName: ${{ deployment.backend_resource_group_name }}
+              backendStorageAccountName: ${{ deployment.storage_account_name }}
+              backendContainerName: 'tfstate'
+              backendKey: ${{ deployment.component }}.tfstate
               product: ${{ variables.product }}
